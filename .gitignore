@@ -1,0 +1,23 @@
+# R
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+*-Ex.R
+*.Rproj
+.Rproj.user/
+
+# R Markdown / knitr
+*_cache/
+*_files/
+.Rmd.html
+
+# Python (used by verify.py for cross-language checks)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
