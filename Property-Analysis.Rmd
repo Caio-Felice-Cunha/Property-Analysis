@@ -1,0 +1,95 @@
+---
+title: "Property Analysis with Chi-Square Test"
+author: "Caio di Felice Cunha"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Business problem
+
+The dataset describes properties (price, size, zip code, type, status, rent
+status, city). The question is whether two of the categorical variables,
+`Type_Property` and `Status_Property` (New vs Old), are related. The
+appropriate test for a relationship between two categorical variables is the
+chi-square test of independence.
+
+H0: the two variables are independent (no relationship).
+H1: the two variables are related.
+
+We reject H0 when the p-value is below 0.05. The test assumes independent
+observations and an expected count of at least 5 in every cell.
+
+This report was knit from `Property-Analysis.Rmd`. It uses base R only and
+requires R >= 4.0.
+
+## Understand the data
+
+```{r load}
+df <- read.csv("data.csv")
+str(df)
+head(df)
+dim(df)
+```
+
+```{r split}
+# Variables under test
+x <- df$Type_Property
+y <- df$Status_Property
+
+unique(x)
+unique(y)
+```
+
+## Cross tables
+
+```{r tables}
+# Counts
+table(x, y)
+
+# Percentages
+round(prop.table(table(x, y)) * 100, 2)
+```
+
+## Chi-square test (full dataset)
+
+```{r test-full}
+chisq.test(x, y)
+chisq.test(table(x, y))
+```
+
+The test returns `X-squared = 868.75, df = 4, p-value < 2.2e-16`. The p-value is
+far below 0.05, so we reject H0: property type and status are related.
+
+## Exercise: exclude apartments
+
+If apartments are removed, does the relationship hold?
+
+```{r filter}
+x <- droplevels(df$Type_Property[df$Type_Property != "Apartment"])
+y <- droplevels(df$Status_Property[df$Type_Property != "Apartment"])
+
+unique(x)
+unique(y)
+
+table(x, y)
+round(prop.table(table(x, y)) * 100, 2)
+```
+
+```{r test-noapt}
+chisq.test(x, y)
+chisq.test(table(x, y))
+```
+
+Now the test returns `X-squared = 0.79718, df = 3, p-value = 0.8501`. The
+p-value is well above 0.05, so we do not reject H0: among non-apartment types
+there is no detectable association.
+
+## Conclusion
+
+The overall association between property type and status is driven entirely by
+apartments. Apartments are disproportionately New (990 of 3891) compared with
+every other type (for example 7 of 364 houses with a backyard). Once apartments
+are excluded the relationship disappears.
